@@ -37,6 +37,16 @@ echo "${ENDPOINTS}" | while read endpoint; do
   fi
 done
 
+echo "Validating source-control config in ${NAMESPACE}"
+if ! kubectl get configmap -n "${NAMESPACE}" sourcecontrol-config; then
+  echo "sourcecontrol-config configmap is missing"
+  exit 1
+fi
+if ! kubectl get secret -n "${NAMESPACE}" sourcecontrol-access; then
+  echo "sourcecontrol-access secret is missing"
+  exit 1
+fi
+
 CONFIG_URLS=$(kubectl get configmap -n "${NAMESPACE}" -l grouping=garage-cloud-native-toolkit -l app.kubernetes.io/component=tools -o json | jq '.items[].data | to_entries | select(.[].key | endswith("_URL")) | .[].value' | sed "s/\"//g")
 
 echo "${CONFIG_URLS}" | while read url; do
