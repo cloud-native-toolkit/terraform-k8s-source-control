@@ -11,6 +11,7 @@ locals {
   chart_dir             = "${local.gitops_dir}/${local.chart_name}"
   release_name          = "sourcecontrol"
   display_name          = var.type == "github" ? "GitHub" : title(var.type)
+  apply                 = var.type != "" && var.type != "none"
   global_config = {
     clusterType = var.cluster_type_code
   }
@@ -24,6 +25,8 @@ locals {
 }
 
 resource "null_resource" "create_dirs" {
+  count = local.apply ? 1 : 0
+
   provisioner "local-exec" {
     command = "mkdir -p ${local.tmp_dir}"
   }
@@ -34,6 +37,7 @@ resource "null_resource" "create_dirs" {
 }
 
 resource "null_resource" "setup-chart" {
+  count = local.apply ? 1 : 0
   depends_on = [null_resource.create_dirs]
 
   provisioner "local-exec" {
@@ -42,6 +46,8 @@ resource "null_resource" "setup-chart" {
 }
 
 resource "null_resource" "delete-helm-source-control" {
+  count = local.apply ? 1 : 0
+
   provisioner "local-exec" {
     command = "kubectl delete secret -n ${var.cluster_namespace} -l name=${local.release_name} --ignore-not-found"
 
@@ -68,7 +74,7 @@ resource "null_resource" "delete-helm-source-control" {
 }
 
 resource "null_resource" "delete-consolelink" {
-  count      = var.cluster_type_code == "ocp4" ? 1 : 0
+  count      = var.cluster_type_code == "ocp4" && local.apply ? 1 : 0
 
   provisioner "local-exec" {
     command = "kubectl delete consolelink toolkit-github --ignore-not-found"
@@ -80,6 +86,7 @@ resource "null_resource" "delete-consolelink" {
 }
 
 resource "local_file" "source-control-values" {
+  count = local.apply ? 1 : 0
   depends_on = [null_resource.setup-chart]
 
   content  = yamlencode({
@@ -90,12 +97,15 @@ resource "local_file" "source-control-values" {
 }
 
 resource "null_resource" "print-values" {
+  count = local.apply ? 1 : 0
+
   provisioner "local-exec" {
-    command = "cat ${local_file.source-control-values.filename}"
+    command = "cat ${local_file.source-control-values[0].filename}"
   }
 }
 
 resource "helm_release" "sourcecontrol_setup" {
+  count = local.apply ? 1 : 0
   depends_on = [null_resource.delete-helm-source-control, null_resource.delete-consolelink, local_file.source-control-values]
 
   name              = local.release_name
