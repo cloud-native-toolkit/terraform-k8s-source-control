@@ -23,4 +23,4 @@ appVersion: 1.16.0
 dependencies:
   - name: tool-config
     repository: https://ibm-garage-cloud.github.io/toolkit-charts/
-    version: 0.10.1
+    version: 0.11.0
