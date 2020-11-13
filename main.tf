@@ -60,7 +60,23 @@ resource "null_resource" "delete-helm-source-control" {
   }
 
   provisioner "local-exec" {
+    command = "kubectl delete configmap -n ${var.cluster_namespace} -l name=${local.release_name} --ignore-not-found"
+
+    environment = {
+      KUBECONFIG = var.config_file_path
+    }
+  }
+
+  provisioner "local-exec" {
     command = "kubectl delete secret -n ${var.cluster_namespace} github-access --ignore-not-found"
+
+    environment = {
+      KUBECONFIG = var.config_file_path
+    }
+  }
+
+  provisioner "local-exec" {
+    command = "kubectl delete configmap -n ${var.cluster_namespace} github-config --ignore-not-found"
 
     environment = {
       KUBECONFIG = var.config_file_path
@@ -74,6 +90,14 @@ resource "null_resource" "delete-helm-source-control" {
       KUBECONFIG = var.config_file_path
     }
   }
+
+  provisioner "local-exec" {
+    command = "kubectl delete configmap -n ${var.cluster_namespace} sourcecontrol-config --ignore-not-found"
+
+    environment = {
+      KUBECONFIG = var.config_file_path
+    }
+  }
 }
 
 resource "null_resource" "delete-consolelink" {
@@ -81,6 +105,14 @@ resource "null_resource" "delete-consolelink" {
 
   provisioner "local-exec" {
     command = "kubectl delete consolelink toolkit-github --ignore-not-found"
+
+    environment = {
+      KUBECONFIG = var.config_file_path
+    }
+  }
+
+  provisioner "local-exec" {
+    command = "kubectl delete consolelink toolkit-sourcecontrol --ignore-not-found"
 
     environment = {
       KUBECONFIG = var.config_file_path
