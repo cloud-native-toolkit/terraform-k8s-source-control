@@ -21,6 +21,9 @@ locals {
     displayName = local.display_name
     url = var.url
     applicationMenu = true
+    otherConfig = {
+      type = var.type
+    }
   }
 }
 
