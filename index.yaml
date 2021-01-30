@@ -1,5 +1,6 @@
 id: github.com/ibm-garage-cloud/terraform-k8s-source-control
 name: source-control
+alias: git
 type: terraform
 description: Module to install Source control into a cluster
 tags:
@@ -8,6 +9,56 @@ tags:
   - source control
   - git
 versions:
+  - platforms:
+      - kubernetes
+      - ocp3
+      - ocp4
+    dependencies:
+      - id: cluster
+        refs:
+          - source: github.com/ibm-garage-cloud/terraform-ibm-container-platform
+            version: ">= 1.7.0"
+          - source: github.com/ibm-garage-cloud/terraform-k8s-ocp-cluster
+            version: ">= 2.0.0"
+      - id: namespace
+        refs:
+          - source: github.com/ibm-garage-cloud/terraform-k8s-namespace
+            version: ">= 2.1.0"
+    variables:
+      - name: cluster_type_code
+        moduleRef:
+          id: cluster
+          output: type_code
+        type: string
+        description: The cluster_type of the cluster
+        default: ocp4
+        optional: true
+      - name: config_file_path
+        moduleRef:
+          id: cluster
+          output: config_file_path
+        type: string
+        description: The path to the kube config
+      - name: cluster_namespace
+        moduleRef:
+          id: namespace
+          output: name
+          discriminator: tools
+        type: string
+        description: The namespace in the cluster where the configuration should be created (e.g. tools)
+      - name: gitops_dir
+        scope: global
+        type: string
+        description: The directory where the gitops configuration should be stored
+      - name: type
+        scope: module
+        type: string
+        description: The type of source control system (github or gitlab) currently
+      - name: url
+        scope: module
+        type: string
+        description: The url to the git host (base git host, org, or repo url)
+    version: v1.2.2
   - platforms:
       - kubernetes
       - ocp3
