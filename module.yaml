@@ -1,4 +1,5 @@
 name: source-control
+alias: git
 type: terraform
 description: Module to install Source control into a cluster
 tags:
@@ -36,3 +37,9 @@ versions:
         id: namespace
         output: name
         discriminator: tools
+    - name: gitops_dir
+      scope: global
+    - name: type
+      scope: module
+    - name: url
+      scope: module
