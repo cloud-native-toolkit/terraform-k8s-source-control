@@ -21,6 +21,7 @@ version: 0.1.0
 appVersion: 1.16.0
 
 dependencies:
-  - name: tool-config
-    repository: https://ibm-garage-cloud.github.io/toolkit-charts/
-    version: 0.11.0
+  - name: console-link-configmap
+    repository: https://charts.cloudnativetoolkit.dev
+    version: 0.2.0
+    alias: git-config
