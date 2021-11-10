@@ -30,3 +30,9 @@ variable "url" {
   type        = string
   description = "The url to the git host (base git host, org, or repo url)"
 }
+
+variable "toolkit_namespace" {
+  type        = string
+  description = "Namespace where the toolkit config jobs run."
+  default     = ""
+}
